@@ -42,11 +42,11 @@ end
 # Move to the www directory of the Android app we just created, where our stuff needs to go
 Dir.chdir "#{base_dir}/bootplate/enyomaton/#{app_name}/assets/www"
 
-# Initialize for scope
+# We'll use this to remember the cordova version- initialize for scope
 cordova_version = nil
 
+# Remove all files in the assets/www directory except our cordova lib
 Dir.foreach("#{base_dir}/bootplate/enyomaton/#{app_name}/assets/www") do |item|
-	#puts item #FAIL removed everything?
 	if not item.match(/^\.\.?$/) and not item.match(/cordova/)
 		FileUtils.rm_r item
 	elsif item.match(/cordova-(.+)\.js/)
