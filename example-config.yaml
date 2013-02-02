@@ -1,0 +1,4 @@
+app_name:	YourAppName 		# TODO: test/support names w/ spaces yet
+name_space:	com.your.namespace 	# Java-like naming here, as the app wrapper IS Java
+app_dir: 	/path/to/app 		# Next directory down should be enyo "bootplate" dir
+gap_dir: 	/path/to/phonegap 	# Downloaded from http://phonegap.com/download/ & unpacked
