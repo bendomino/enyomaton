@@ -64,11 +64,44 @@ FileUtils.cp "index.html", "index.orig"
 
 new_index = File.new "index.html", "w"
 
-# Insert the cordova inclusion into the index file
+# Hacky state variable for the loop below
+in_body = false
+
 File.open("index.orig", "r").each_line do |line|
+	if in_body
+		# We've reached the close of the body tag
+		if line.match(/^\s*<\/body>$/)
+			new_index.puts line
+			in_body = false
+		end
+
+		# If in the <body> tag, don't output this line
+		next
+	end
+
 	new_index.puts line
+
+	# Insert the cordova inclusion into the index file
 	if line.match(/(\s*)<!-- js -->/)
 		new_index.puts "#{$1}<script src=\"#{cordova_version}\"></script>"
+	end
+
+	# TODO: Make this configurable and generally not as sucky
+	# Upon reaching the start of the <body>, write our own script output to account for PhoneGap events
+	if line.match(/^(\s*)<body class="enyo-unselectable">$/)
+		in_body = true
+		indent = "#{$1}\t"
+
+		new_index.puts "#{indent}<script>"
+		new_index.puts "#{indent}\t// PhoneGap event"
+		new_index.puts "#{indent}\tdocument.addEventListener(\"deviceready\", onDeviceReady, false);"
+			
+		new_index.puts "#{indent}\tfunction onDeviceReady() {"
+		new_index.puts "#{indent}\t\t// tell enyo to listen for backbutton event"
+		new_index.puts "#{indent}\t\tenyo.dispatcher.listen(document, \"backbutton\");"
+		new_index.puts "#{indent}\t\tnew App().renderInto(document.body);"
+		new_index.puts "#{indent}\t}"
+		new_index.puts "#{indent}</script>"
 	end
 end
 
